@@ -2,10 +2,10 @@ import numpy as np
 from backpropogation import backprop
 class Network:
 
-    def _init_(self,size):
+    def __init__ (self,size):
       self.insize=size[0]
       self.osize=size[-1]
-      self.nlayers=len(size)-2
+      self.num_layers=len(size)
     # Needs to be tested ,Can have an alternative of Zero Intitalization
       self.weights= [np.random.randn(y, x)
                         for x, y in zip(size[:-1], size[1:])]
@@ -16,7 +16,7 @@ class Network:
             a = sigmoid(np.dot(w, a)+b)
         return a
  #Needs work 
-    def hebbian(self,a,eta,forget):
+    def hebbian(self,input,eta,forget):
         out=[]
         a =input
         out.append(a)
@@ -32,7 +32,12 @@ class Network:
         #Implement Hebbian interface
         
 
-
+  # reverse traversal
+    def rev(self,op):
+      reverse=list(zip(self.biases,self.weights)).reverse()
+      for b,w in reverse:
+        op=sigmoid(np.dot(w,op)+b)
+      return op
 
     def QS(self,data ,fqu, eta):
         #implement a little deviator 
@@ -55,7 +60,9 @@ class Network:
         test_results = [(np.argmax(self.feedforward(x)), y)
                         for (x, y) in test_data]
         return sum(int(x == y) for (x, y) in test_results)
-
+   
+    def cost_derivative(self, output_activations, y):
+        return (output_activations-y)
 def sigmoid(z):
       return 1.0/(1.0+np.exp(-z))
 
