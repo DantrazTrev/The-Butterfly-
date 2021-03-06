@@ -19,24 +19,34 @@ class Network:
     def hebbian(self,input,eta,forget):
         out=[]
         a =input
+        print(a)
         out.append(a)
         for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, input)+b)
-            out.append(a)
-        nabw=np.dot(a[1:],a[:-1].T) 
+            a = sigmoid(np.dot(w, a)+b)
+            out.append(a)  
+        nabw=[]
+        for j,i in zip(out[1:],out[:-1]):
+          nabw.append(np.dot(i,np.transpose(j)).transpose())
+        print(nabw)
         #implement forgetting factor
         self.weights=[w+eta*nw  for w,nw in zip(self.weights,nabw)]  
         #check the bias update
-        self.biases=[b+eta*nw for b,nw in zip(self.biases,nabw)]
+        self.biases=[b+eta*nw for b,nw in zip(self.biases,out[1:])]
         
         #Implement Hebbian interface
         
 
   # reverse traversal
+  #Still needs research , Current implementation is just inverse of sigmoid
     def rev(self,op):
-      reverse=list(zip(self.biases,self.weights)).reverse()
+      wr=np.flip(self.weights)
+      br=np.flip(self.biases)
+      reverse=list(zip(br,wr))
+      print(reverse)
       for b,w in reverse:
-        op=sigmoid(np.dot(w,op)+b)
+        op=op-b
+        op=inv_sigmoid(np.dot(np.transpose(w),op))
+        print(op)
       return op
 
     def QS(self,data ,fqu, eta):
@@ -51,7 +61,7 @@ class Network:
             self,delta_nabla_b, delta_nabla_w = backprop(self,x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [w-(eta/len(mini_batch))*nw
+        self.weights = [w-(eta/(len(mini_batch)+1))*nw
                         for w, nw in zip(self.weights, nabla_w)]
         self.biases = [b-(eta/len(mini_batch))*nb
                        for b, nb in zip(self.biases, nabla_b)]
@@ -68,3 +78,6 @@ def sigmoid(z):
 
 def sigmoid_prime(z):
       return sigmoid(z)*(1-sigmoid(z))    
+def inv_sigmoid(z):
+  return sigmoid(z)
+ #To be left for discussion over inverse sigmoid function , Currently only using sigmoid

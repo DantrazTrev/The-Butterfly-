@@ -36,8 +36,9 @@ class Player:
 #selfcon is the level of confidence ie the learning rate 
 #ops are my choices
   def meing(self,ops,selfcon,iter):
-    ips=[[0]]*self.net.insize
+    ips=np.zeros((chaur+1,1))
     ips[-1]=[1]
+    ips=[[ip]]
     data = list(zip([ips],[ops]))
     self.net.QS(data,iter,selfcon)
     self.op=self.net.feedforward(ips)
@@ -74,9 +75,8 @@ class Player:
     Chaure.ff=ff
     return ff
 
-  #def dicu(self,id):
-  #  Chaure.id
-
+#  def dicu(self,id):
+    
 
 
 
@@ -105,9 +105,13 @@ class Others:
 
   #For the love of god complete this(I know that bh)
   def iktb(self,ips,iteration,selfcon=np.random.randn()):
-    ops=[1,0]
+    ops=np.zeros((2,1))
+    ops[0]=[1]
+    ops=[ops]
+    ips=[ips]
     data=list(zip(ips,ops))
     self.net.QS(self.net,data,iteration,selfcon)
+    self.op=self.net.feedforward(ips)
     
   def ktb(self):
     ip=self.net.rev(self.op)
