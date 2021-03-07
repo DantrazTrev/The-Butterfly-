@@ -1,5 +1,20 @@
 from kar import *
 import random
+import os
+
+class DayDump:
+  
+  def __init__(self):
+    self.v=0
+    self.sav=dict()
+  @change
+  def change(self,v):
+    self.v+=v
+
+  def sav(self):
+    self
+    self.sav.append()   
+    
 
 class Game:
   def __init__(self,id,cux,name="Orta"):
@@ -10,7 +25,8 @@ class Game:
     else:
       self.name=name
     self.chars=dict()
-    self.daycount=0
+    os.mkdir("/name")
+    
   
   def start(self,choices,char,level=[]):
     ca=len(char)
@@ -22,6 +38,8 @@ class Game:
     self.chars["You"]=Player(ca,co,level[-1])
     for i in range(ca):
       self.char[ca[i]]=Other(i,co,level[i])
+    self.day=DayDump()
+    self.day.sav()
     #Charecters Intialized
   
   def utd(self):
