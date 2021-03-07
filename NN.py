@@ -19,7 +19,7 @@ class Network:
     def hebbian(self,input,eta,forget):
         out=[]
         a =input
-        print(a)
+       
         out.append(a)
         for b, w in zip(self.biases, self.weights):
             a = sigmoid(np.dot(w, a)+b)
@@ -27,7 +27,7 @@ class Network:
         nabw=[]
         for j,i in zip(out[1:],out[:-1]):
           nabw.append(np.dot(i,np.transpose(j)).transpose())
-        print(nabw)
+       
         #implement forgetting factor
         self.weights=[w+eta*nw  for w,nw in zip(self.weights,nabw)]  
         #check the bias update

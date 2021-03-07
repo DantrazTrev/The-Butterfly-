@@ -21,51 +21,63 @@ class Player:
 #id : wtf?
   def __init__(self,chaur,choices,level,freq=np.random.randint(10,40)):
     size=[chaur+1]
-    Chaure = [0]*(chaur+1)
+    for i in range(chaur+1):
+      Chaure.append(0)
     for i in range(level):
       size.append(np.random.randint(2,chaur)) #needs to be tested and updated
     size.append(choices)
     self.net=NN.Network(size)
     self.id=chaur
+    self.insize=size[0]
+    self.osize=size[-1]
     Chaure[chaur]=self
     self.freq=freq
     self.op=[]
+    self.ip=[]
 #MEing ie turning a player into me (One time only function assumes no other influence )
 #ops defines the outputs of other players
 #iter defines the number of iterations
 #selfcon is the level of confidence ie the learning rate 
 #ops are my choices
   def meing(self,ops,selfcon,iter):
-    ips=np.zeros((chaur+1,1))
+    ips=np.zeros((self.net.insize,1))
     ips[-1]=[1]
-    ips=[[ip]]
     data = list(zip([ips],[ops]))
     self.net.QS(data,iter,selfcon)
     self.op=self.net.feedforward(ips)
 #Ips ??
   def ips(self):
-    a=[]
-    for jane in Chaure:
-      jane.ops()
+    global Chaure
+    ips=[]
+    for jane in Chaure[:-1]:
+      ips.append([jane.ops(self.op)])
+    ips.append([1])  
+      
       
 #influenced defines how a player is influneced by someone
 #ips is the input
 #trust is the trust trust_level
 #forget is the forgetting factor
-  def influenced(self,ips,trust,forget):
+  def influenced(self,id):
     #inputs to be gathered
+      global Chaure
+      ips=Chaure[id].op# needs to be fixed
+      trust =self.trusts(id)
+      forget=self.forget_factor(id)
       self.net.hebbian(ips,trust,forget)
       self.op=self.net.feedforward(ips)
 
-  def ops(self,ips=np.random.randn(len(Chaure))):
-    return self.net.feedforward(ips)      
+  def ops(self,ips):
+    
+    self.op= self.net.feedforward(ips)
+    return self.op
   
-  def trusts(self):   #trust matrix
-    tmatrix=[self.net.wieghts[0]]
+  def trusts(self,id):   #trust matrix
+    tmatrix=[self.net.weights[0]]
     trusts=[]
     for t in tmatrix:
       trusts.append(sum(t)/len(t))
-    return trusts
+    return trusts[id]
 
   def forget_factor(self,id):
     meets=0
@@ -75,14 +87,22 @@ class Player:
     Chaure.ff=ff
     return ff
 
-#  def dicu(self,id):
-    
+  def dicu(self,id):
+    global Chaure
+    ops=Chaure[id].rev()
+    trust=self.trusts(id)
+    freq=self.freq[id]
+    ips=self.ips()
+    ips[id]=[1]
+    data=zip([ips],[ops])
+    self.net.QS(data,freq,trust)
+    self.op=self.ops(ips)
 
 
 
 class Others:
   
-  def __init__(self,id,choices,complexity,trust_level=np.random.rand(0,1),freq=np.random.randint(30,100),turt=np.random.rand(len(Chaure))):
+  def __init__(self,id,choices,complexity,trust_level=np.random.rand(0,1),freq=np.random.randint(30,100)):
     self.trust=trust_level # defines trust level for the charecter from the player
     self.f=freq
     size=[]
@@ -93,8 +113,10 @@ class Others:
      #random choice till now 
     size.append(2)
     self.net(size)
-    self.tmatrix=turt;
+    global Chaure 
+    turt=np.random.rand(len(Chaure))
     Chaure[id]=self
+    self.tmatrix=turt;
     self.ff=Chaure[-1].forget_factor(id)
     self.op=[]
     self.tb=[]
@@ -117,10 +139,31 @@ class Others:
     ip=self.net.rev(self.op)
     return ip
     # For a bipolar output
-  def pinfluence(self,influence):
+    
+
+  def pinfluence(self):
+    global Chaure
     pay_ips=Chaure[-1].op
+    trust=self.tmatrix[-1]
     self.net.hebbian(pay_ips,trust,self.ff)
     self.op=self.net.feedforward(pay_ips)
+
+  def disc(self):
+    global Chaure
+    ips=Chaure[-1].op
+    ops=[[1],[0]]
+    data = list(zip([ips],[ops]))
+    trust=self.tmatrix[-1]
+    iter=self.f[id]
+    self.net.QS(data,iter,trust)
+    self.op=self.net.feedforward(ips)
+
+  def ips(self,a=[]):
+    if len(a):
+      a=self.op
+    self.tb= self.net.rev(a)
+    return self.tb
+
 
   def ops(self,a):
     v=self.net.feedforward(a)  
@@ -128,12 +171,9 @@ class Others:
     return s  
 
   def cinfluence(self,id):
+    global Chaure
     ips=Chaure[id].ktb()
-    ip=[]
-    for i in ips:
-      ip.append([i])
     influ=self.trusts(id)
-    forg=Chaure[id].ff
-    self.net.hebbian(ip,influ,forg)
+    forg=Chaure[id].ff # needs a bit of work 
+    self.net.hebbian(ips,influ,forg)
     
-  #def pdis()
