@@ -72,7 +72,7 @@ class Network:
         f = open(filename, "w")
         json.dump(data, f)
         f.close()
-    def influence(self,)
+ 
 def load(filename):
     f = open(filename, "r")
     data = json.load(f)

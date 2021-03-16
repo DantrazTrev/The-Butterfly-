@@ -1,5 +1,7 @@
 import numpy as np 
 from backpropogation import backprop
+import json 
+
 class Network:
 
     def __init__ (self,size):
@@ -73,6 +75,17 @@ class Network:
    
     def cost_derivative(self, output_activations, y):
         return (output_activations-y)
+    
+    def save(self):
+        data = {"sizes": self.sizes,
+                "weights": [w.tolist() for w in self.weights],
+                "biases": [b.tolist() for b in self.biases]}
+        return data
+   
+    def load(self,data):
+      self.weights = [np.array(w) for w in data["weights"]]
+      self.biases = [np.array(b) for b in data["biases"]]
+          
 def sigmoid(z):
       return 1.0/(1.0+np.exp(-z))
 
