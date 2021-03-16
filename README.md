@@ -17,5 +17,5 @@ Creation of the ANN models
 <li>The influnece , discussion and the player models</li>
 <li>The Day model</li>
 <li>The interactions</li>
-<li> API Landing Page <li>
+<li> API Landing Page </li>
  
