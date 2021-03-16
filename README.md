@@ -1,4 +1,5 @@
-# The-Butterfly🦋
+# The-Butterfly🦋 API
+## The project is still under development 
 The butterfly is a game/simulation model that is based on the Butterfly effect on human decision making modelled as ANN, The project is inspired by the likes of Life is Strange Series
 , Until Dawn and is a going to have a DnD styled interface.
 This repository consists of progress made in desiging the simulation model that would serve as an backend to the game
@@ -16,3 +17,5 @@ Creation of the ANN models
 <li>The influnece , discussion and the player models</li>
 <li>The Day model</li>
 <li>The interactions</li>
+<li> API Landing Page <li>
+ 
