@@ -6,7 +6,7 @@ import shutil
 
 
 class Game:
-  #POST
+  #POST ja
   def __init__(self,id,cux,name="Orta"):
     self.id=id
     self.cu=cux
@@ -26,7 +26,7 @@ class Game:
         print("User already exists")
 
     
-  #POST
+  #POST Ja
   def start(self,choices,char,level=[]):
     ca=len(char)
     co=len(choices)
@@ -42,15 +42,16 @@ class Game:
     return{"Game Status":1}  
   
     
-  #POST  #Charecters Intialized
+  #POST  #Charecters Intialized Ja
   def upday(self,v=1):
+    self.utd()
     self.day+=v
     self.day_threshhold=randint(4,10)
     if self.day == int(self.day):
       self.save()
     return{"day":self.day}
 
-  #Unreferetiable
+  #Unreferetiable 
   def save(self):
     data={}
     Nm=self.chars
@@ -65,7 +66,7 @@ class Game:
     f.close()
     print("Save performed")
   
-  #POST
+  #POST Ja
   def rewind(self,day):
     f = open(self.name+'/'+str(day), "r")
     data = json.load(f)
@@ -80,7 +81,7 @@ class Game:
   
 
     
-  #GET
+  #GET 
   def utd(self):
     Me=self.chars["You"]
     Nm=self.chars
@@ -120,6 +121,7 @@ class Game:
   #GET  #Some result mech   
   def daystat(self):
     res={"day":self.day,"energy":self.day_threshhold}
+    return res
 
   #pOST
   def pinf(self,name):
@@ -181,7 +183,9 @@ class Game:
   def cstat(self,name):
     Nm=self.chars[name]
     acc=self.ts(name)
-    return {"kar":name,"result":Nm.ip([[1],[0]]),"acceptance":acc}
+    me=Nm.ip([[1],[0]])
+    res=map(self.choli,me)
+    return {"kar":name,"result":res,"acceptance":acc}
   
   #POST
   
@@ -204,3 +208,50 @@ class Game:
 
   def striop(self):
     pass
+
+    #Trust ajust for players
+
+  def trusty(self,name,trust):
+    Me=self.chars["You"]
+    Nm=self.chars[name]
+    Me.trust[Nm.id]=trust
+    return {"kar":name,"Action":"Trust Updated"}
+    
+    #Will never be used
+  def fortrusty(self,id,trust):
+    Me=self.chars["You"]
+    Me.trust[id]+=random.rand(-trust,trust)
+  
+
+  #To implement the trust matrix could be dangerous need to add fuzziness to it
+  def doawholetrusty(self,tmatrix):
+    for jane in len(self.chars)-1:
+      self.fortrusty(jane,tmatrix[jane])
+    return {"Action":"Trusts Updated"}
+
+    
+  def artificialtrusty(self,name):
+    Me=self.chars["You"]
+    Nm=self.chars[name]
+    trust=Me.artificial_trust(Nm.id)
+    return {"kar":name,"artrust":trust}
+  
+    
+  
+
+  def distancedu(self,name):
+    Me=self.chars["You"]
+    Nm=self.chars[name]
+    f=Me.freq[Nm.id]
+    Me.freq[Nm.id]-=rand.randint(f/5,f/3)
+    return {"kar":name ,"Freq":"reduced"}
+
+
+
+  def undistancedu(self,name):
+    Me=self.chars["You"]
+    Nm=self.chars[name]
+    f=Me.freq[Nm.id]
+    Me.freq[Nm.id]-=rand.randint(f,f*2)
+    return {"kar":name ,"Freq":"increased"}
+      

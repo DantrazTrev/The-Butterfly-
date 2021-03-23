@@ -34,6 +34,7 @@ class Player:
     self.freq=freq
     self.op=[]
     self.ip=[]
+    self.trust=[]
 #MEing ie turning a player into me (One time only function assumes no other influence )
 #ops defines the outputs of other players
 #iter defines the number of iterations
@@ -72,11 +73,17 @@ class Player:
     self.op= self.net.feedforward(ips)
     return self.op
   
-  def trusts(self,id):   #trust matrix
+  def trusts(self,id):
+       #trust matrix
+    if len(trust)==0:
+      tp=self.artitical_trusts(id) 
+      return tp
+    return self.trusts[id]
+  
+  def artitical_trusts(self,id):
     tmatrix=[self.net.weights[0]]
-    trusts=[]
     for t in tmatrix:
-      trusts.append(sum(t)/len(t))
+        trusts.append(sum(t)/len(t))
     return trusts[id]
 
   def forget_factor(self,id):
