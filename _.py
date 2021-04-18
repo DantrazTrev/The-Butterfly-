@@ -8,7 +8,7 @@ from flask_cors import CORS, cross_origin
 Gy = dict()
 app = Flask(__name__)
 CORS(app)
-ver="alpha"
+
 # Home page which will redirect to docs currently cause that's there
 @app.route('/')
 def index():
@@ -27,7 +27,7 @@ def docs():
 #A wrong call requese homie , So for the first one we give an error
 @app.route('/api/game/', methods=['GET'])
 def dummy():
-    ga = {"status": "The game is running correctly", "Version": ver}
+    ga = {"message": "Wrong request,please refer to the docs", "URL": "idk"}
     return respor(ga)
 
 # A game init call request which specifies the name and other things of taht matter
@@ -41,8 +41,8 @@ def start():
     try:
         Gy[inz["name"]] = Game(request.remote_addr, inz["complexity"], inz["name"])
     except:
-        abort(500, error_message="User already here")
-    return respor({"status": "user created","ip":"-","name":inz["name"]})
+        abort(500, error_message="User already")
+    return respor({"status": "user created"})
 
 @app.route('/api/game/<string:id>', methods=['POST'])
 def begin(id):
@@ -50,7 +50,7 @@ def begin(id):
         abort(400)
     inz = json.loads(request.data)
     Gy[id].start(inz["choices"],inz["charecters"],inz["levels"])
-    return respor({"status": "game created","number_of_charecters":len(inz["charecters"]),"number_of_choices":len(inz["choices"])})
+    return respor({"status": "game created"})
 
 # For the game config the api request[POST] data : choices<n,1> confidence
 @app.route('/api/game/<string:id>/playconfig', methods=['POST'])
@@ -87,12 +87,7 @@ def upday(id):
 @app.route('/api/game/<string:id>/unt', methods=['GET'])
 def utd(id):
     result = Gy[id].utd()
-    return respor({"status":"dayupdated","warning":"This endpoint is not supported" })
-@app.route('/api/game/<string:id>/fight', methods=['GET'])
-def er(id):
-    result = Gy[id].fight()
     return respor(result)
-
 
 @app.route('/api/game/<string:id>/day', methods=['GET'])
 def day(id):
@@ -136,20 +131,6 @@ def wholes(id,name):
     inz = json.loads(request.data)
     result = Gy[id].doawholetrusty(inz["tmatrix"])
     return respor(result)
-
-@app.route('/api/game/<string:id>/rewind', methods=['POST'])
-def time(id):
-    if not request.json:
-        abort(400)
-    inz = json.loads(request.data)
-    result = Gy[id].rewind(inz["day"])
-    return respor(result)
-
-@app.route('/api/game/<string:id>/quit', methods=['GET'])
-def wee(id):
-      Gy[id].quit()
-
-
 
 def respor(dic):
     resp = jsonify(dic)

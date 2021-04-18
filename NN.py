@@ -7,6 +7,7 @@ class Network:
     def __init__ (self,size):
       self.insize=size[0]
       self.osize=size[-1]
+      self.sizes=size
       self.num_layers=len(size)
     # Needs to be tested ,Can have an alternative of Zero Intitalization
       self.weights= [np.random.randn(y, x)
@@ -27,6 +28,7 @@ class Network:
             a = sigmoid(np.dot(w, a)+b)
             out.append(a)  
         nabw=[]
+        print(out)
         for j,i in zip(out[1:],out[:-1]):
           nabw.append(np.dot(i,np.transpose(j)).transpose())
        
@@ -41,14 +43,14 @@ class Network:
   # reverse traversal
   #Still needs research , Current implementation is just inverse of sigmoid
     def rev(self,op):
-      wr=np.flip(self.weights)
-      br=np.flip(self.biases)
+      wr=self.weights[:]
+      br=self.biases[:]
+      wr=np.flip(wr)
+      br=np.flip(br)
       reverse=list(zip(br,wr))
-      print(reverse)
       for b,w in reverse:
         op=op-b
         op=inv_sigmoid(np.dot(np.transpose(w),op))
-        print(op)
       return op
 
     def QS(self,data ,fqu, eta):

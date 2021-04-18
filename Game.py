@@ -1,8 +1,11 @@
 from kar import *
-import random
+from numpy import random
 import os
 import json
 import shutil
+from json import JSONEncoder
+
+
 
 
 class Game:
@@ -22,6 +25,7 @@ class Game:
     except:
       try:
         os.rmdir(name)
+        os.mkdir(name)
       except:
         print("User already exists")
 
@@ -36,16 +40,19 @@ class Game:
       level=[self.cu]*(ca+1)
     self.chars["You"]=Player(ca,co,level[-1])
     for i in range(ca):
-      self.char[ca[i]]=Other(i,co,level[i])
+      self.chars[self.charli[i]]=Others(i,co,level[i])
+    print(self.chars)
+    for j in self.charli:
+      ip=random.rand(len(choices),1)
+      self.chars[j].iktb(ip,30,1)  
     self.day=0
-    self.save()
-    return{"Game Status":1}  
+    self.save() 
   
     
   #POST  #Charecters Intialized Ja
   def upday(self,v=1):
-    self.utd()
-    self.day+=v
+    for j in range(v):
+      self.utd()
     self.day_threshhold=randint(4,10)
     if self.day == int(self.day):
       self.save()
@@ -53,16 +60,14 @@ class Game:
 
   #Unreferetiable 
   def save(self):
-    data={}
+    data=dict()
     Nm=self.chars
     for jane in self.charli:
-      data[Nm[jane].id]=Nm[jane].net.save()
-      data[Nm[jane].id]={"op":Nm[jane].op}
-    data[len(Nm)]=Nm["You"].net.save()
-    data[len(Nm)]={"op":Nm["You"].op}
+      data[Nm[jane].id]={"net":Nm[jane].net.save(),"op":Nm[jane].op}
+    data[len(Nm)-1]={"net":Nm["You"].net.save(),"op":Nm["You"].op}
     name=str(self.day)
     f=open(self.name+'/'+name,'w')
-    json.dump(data,f)
+    json.dump(data,f,cls=NumpyArrayEncoder)
     f.close()
     print("Save performed")
   
@@ -72,8 +77,8 @@ class Game:
     data = json.load(f)
     f.close()
     for id in data:
-      Chaure[id].net.load(data[id])
-      Chaure[id].op=data[id]["op"]#Needs testing
+      Chaure[int(id)].net.load(data[id]["net"])
+      Chaure[int(id)].op=data[id]["op"]#Needs testing
     self.day=day
     self.day_threshhold=randint(4,10)
     return {"Rewinded":True,"day":day}
@@ -85,14 +90,20 @@ class Game:
   def utd(self):
     Me=self.chars["You"]
     Nm=self.chars
-    order=set(self.charli)
+    order=self.charli.copy()
+    random.shuffle(order)
+    c1=self.charli.copy()
+    c2=self.charli.copy()
+    random.shuffle(c1)
+    random.shuffle(c2)
     inf=dict()
-    cie=list(zip(random.shuffle(self.charli),random.shuffle(self.charli)))
+    cie=list(zip(c1,c2))
     for i in order:
-      for j in range(random.randint(2,12)):
-        res= Nm[i].pinfluence()
+      Me.influenced(Nm[i].id)
+      for j in range(random.randint(2,7)):
+        Nm[i].pinfluence()
         self.minchange(Nm[i].id)
-      inf[res["kar"]]={"Choice":res["choice"],"Level":res["inf"]}  
+      inf[i]={"effect":max(Me.op)[0],"level":Nm[i].trust}  
       for x,y in cie:
         if Nm[x].id != Nm[y].id:
           for bs in range(random.randint(1,12)):
@@ -107,15 +118,15 @@ class Game:
   #POST
   def discu(self,name):
     self.limits()
-    if name in self.charli and self.day!=0:
+    if name in self.charli and self.day>0:
       Me=self.chars["You"]
       Op=self.chars[name]
       for i in range(random.randint(3,5)):
         Me.dicu(Op.id)
         Op.disc()
-      return {"kar":name,"eft":max(Me.op)[0],"inf":max(Op.tb)[0]}
+      return {"Charecter":name,"Choices change":Me.op.tolist()}
     else: 
-      return {"kar":name,"eft":0,"inf":0}
+      return {"Charecters":name,"Choice change":0}
         
   
   #GET  #Some result mech   
@@ -127,12 +138,11 @@ class Game:
   def pinf(self,name):
     Me=self.chars["You"]
     Nm=self.chars[name]
-
     self.limits()
     for j in range(random.randint(2,12)):
         Me.influenced(Nm.id)
         Nm.pinfluence()
-    return {"name":name,"choice":self.choli[argmax(Me.op)],"eft":max(Me.op)[0]}
+    return {"name":name,"choice":self.choli[np.argmax(Me.op)],"eft":max(Me.op)[0]}
 
   #UNREFER  
   def limits(self):
@@ -145,19 +155,23 @@ class Game:
   def fight(self):    
      Nm=self.chars
      Ak=random.randint(4,25)# big numbers
+     c1=self.charli[:]
+     c2=self.charli[:]
+     random.shuffle(c1)
+     random.shuffle(c2)
      for i in range(Ak):
-      cie=list(zip(random.shuffle(self.charli[:-1]),random.shuffle(self.charli[:-1])))     
+      cie=list(zip(c1,c2))     
       for x,y in cie:
         if Nm[x].id != Nm[y].id:
           for bs in range(random.randint(1,12)):
             Nm[x].cinfluence(Nm[y].id)
             Nm[y].cinfluence(Nm[x].id) 
-     return{"fight":Ak}
+     return{"status":"Great you've started a fight"}
   
   #UNREFER UNDO
   def minchange(self,id):
-    iddt=self.chars[id]
-    se=random.randint()  
+    iddt=self.chars[self.charli[id]]
+    se=random.randint(5,21)  
     if se>10:
       ip=random.rand(len(self.choli),1)
       iddt.iktb(ip,se,1)
@@ -167,7 +181,7 @@ class Game:
   def whome(self,chm,conf,muc=random.randint(10,30)):
     Me=self.chars["You"]
     Me.meing(chm,conf,muc)
-    return {"kar":"You","result":Me.op}
+    return {"status":"Player Config Complete","kar":"You","result":Me.op.tolist()}
 
   def hmk(self,name):
     pass
@@ -183,16 +197,18 @@ class Game:
   def cstat(self,name):
     Nm=self.chars[name]
     acc=self.ts(name)
-    me=Nm.ip([[1],[0]])
-    res=map(self.choli,me)
-    return {"kar":name,"result":res,"acceptance":acc}
+    acc=acc[0][0]
+    me=Nm.ips([[1],[0]])
+    me=me.tolist()
+    res={self.choli[np.argmax(me)]:max(me)}
+    return {"kar":name,"prefers":res,"acceptance":acc}
   
   #POST
-  
+  #cehck jane
   def pstat(self):
     Me=self.chars["You"]
     choice=dict()
-    for jane in range(self.choli):
+    for jane in range(len(self.choli)):
       choice[self.choli[jane]]=Me.op[jane][0]
     return {"Playerop":choice}
 
@@ -237,13 +253,13 @@ class Game:
     return {"kar":name,"artrust":trust}
   
     
-  
+ #Chnge the freq access point 
 
   def distancedu(self,name):
     Me=self.chars["You"]
     Nm=self.chars[name]
-    f=Me.freq[Nm.id]
-    Me.freq[Nm.id]-=rand.randint(f/5,f/3)
+    f=Nm.freq
+    Nm.freq-=random.randint(f/5,f/3)
     return {"kar":name ,"Freq":"reduced"}
 
 
@@ -251,7 +267,14 @@ class Game:
   def undistancedu(self,name):
     Me=self.chars["You"]
     Nm=self.chars[name]
-    f=Me.freq[Nm.id]
-    Me.freq[Nm.id]-=rand.randint(f,f*2)
+    f=Nm.freq
+    Nm.freq-=random.randint(f*2,f*5)
     return {"kar":name ,"Freq":"increased"}
       
+
+
+class NumpyArrayEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)      
