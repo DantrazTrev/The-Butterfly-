@@ -21,11 +21,11 @@ class Game:
     self.day_threshhold=random.randint(4,10)
     
     try:
-      os.mkdir(name)
+      os.makedirs("char/"+name)
     except:
       try:
-        os.rmdir(name)
-        os.mkdir(name)
+        os.rmdir("char/"+name)
+        os.makedirs("char/"+name)
       except:
         print("User already exists")
 
@@ -66,14 +66,14 @@ class Game:
       data[Nm[jane].id]={"net":Nm[jane].net.save(),"op":Nm[jane].op}
     data[len(Nm)-1]={"net":Nm["You"].net.save(),"op":Nm["You"].op}
     name=str(self.day)
-    f=open(self.name+'/'+name,'w')
+    f=open("char/"+self.name+'/'+name,'w')
     json.dump(data,f,cls=NumpyArrayEncoder)
     f.close()
     print("Save performed")
   
   #POST Ja
   def rewind(self,day):
-    f = open(self.name+'/'+str(day), "r")
+    f = open("char/"+self.name+'/'+str(day), "r")
     data = json.load(f)
     f.close()
     for id in data:
@@ -129,7 +129,8 @@ class Game:
       return {"Charecters":name,"Choice change":0}
         
   
-  #GET  #Some result mech   
+  #GET requests handled @ api/<user>/day
+  #   
   def daystat(self):
     res={"day":self.day,"energy":self.day_threshhold}
     return res
@@ -219,7 +220,7 @@ class Game:
     return t
 
   def quit(self):
-    shutil.rmdir(self.name)
+    shutil.rmtree("char/"+self.name)
     return {"Game staus":-1}
 
   def striop(self):

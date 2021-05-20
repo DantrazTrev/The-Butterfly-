@@ -148,6 +148,7 @@ def time(id):
 @app.route('/api/game/<string:id>/quit', methods=['GET'])
 def wee(id):
       Gy[id].quit()
+      return respor({"status":"Simulation Removed"})
 
 
 
