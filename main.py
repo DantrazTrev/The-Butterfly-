@@ -58,6 +58,7 @@ def iconfig(id):
     if not request.json:
         abort(400)
     inz = json.loads(request.data)
+    print(type(inz['choices']),inz['choices'])
     result = Gy[id].whome(inz["choices"], inz["confidence"])
     return respor(result)
 
